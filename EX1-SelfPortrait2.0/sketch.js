@@ -24,22 +24,19 @@ function setup() {
   paddedCanvasWidth = width - windowPadding;
   paddedCanvasHeight = height - windowPadding;
 
-  
   createSaveButton();
   createResetButton();
   createJoinButton();
   setupCanvas();
 }
 
-function setupCanvas(){
-
+function setupCanvas() {
   tintColor = random(neonColors);
   background(random(neonColors));
   resizeImages();
   createCutouts(numOfCutouts);
   imageMode(CENTER);
   image(images[0], paddedCanvasWidth / 2, paddedCanvasHeight / 2);
-
 }
 
 function draw() {
@@ -131,8 +128,7 @@ function joinComposition() {
   hideMainButtons();
   background('black');
   video = createCapture(VIDEO);
-  //video.size(images[0].width,images[0].height);
-  video.size(width,height);
+  video.size(width, height);
   video.hide();
   personSeg.setupBodySegmentation(video);
   createCaptureButton();
@@ -143,14 +139,13 @@ function capturedImage() {
   showMainButtons();
 
   let capturedImage = captureImage();
-  let capturedImageWeight=5;
+  let capturedImageWeight = 5;
   capturingViewer = false;
 
-  capturedImage.resize(images[0].width,images[0].height);
-  for(let i=0;i<capturedImageWeight;i++){
+  for (let i = 0; i < capturedImageWeight; i++) {
     images.push(capturedImage);
   }
-  cutouts=[];
+  cutouts = [];
   setupCanvas();
 }
 
