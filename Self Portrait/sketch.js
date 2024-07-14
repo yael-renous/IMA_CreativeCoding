@@ -19,6 +19,7 @@ function setup() {
   background(random(neonColors));
   resizeImages();
   createCutouts(numOfCutouts);
+  
   image(images[0], 0, 0);
 }
 
@@ -26,7 +27,7 @@ function setup() {
 function resizeImages(){
   for(let picture of images){
     if(width<height){
-      console.log("width<height"+width +"   "+ height);
+      //console.log("width<height"+width +"   "+ height);
       picture.resize(width-windowPadding, ((picture.height*(width-windowPadding))/picture.width));
     }
     else{
