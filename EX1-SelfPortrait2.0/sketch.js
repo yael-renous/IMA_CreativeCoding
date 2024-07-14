@@ -1,3 +1,5 @@
+// sketch.js
+
 const numOfCutouts = 15;
 const neonColors = ['#FF00FF', '#39FF14', '#FFFF33', '#00FFFF', '#FF9933', '#FF1493', '#7FFF00', '#00FF00', '#00CED1', '#FF4500', '#DA70D6', '#40E0D0', '#EE82EE', '#FFD700'];
 
@@ -11,21 +13,10 @@ let cutouts = [];
 let images = [];
 let capturingViewer = false;
 
-//Body Segmentation Fields
-let bodySegmentation;
-let video;
-let segmentation;
-let finalImage = null;
-let options = {
-  maskType: "person",
-};
-
 function preload() {
   images.push(loadImage('me@0.33x.png'));
   images.push(loadImage('luli@0.33x.png'));
   images.push(loadImage('kai@0.33x.png'));
-
-  bodySegmentation = ml5.bodySegmentation("BodyPix", options);
 }
 
 function setup() {
@@ -33,31 +24,36 @@ function setup() {
   paddedCanvasWidth = width - windowPadding;
   paddedCanvasHeight = height - windowPadding;
 
+  
+  createSaveButton();
+  createResetButton();
+  createJoinButton();
+  setupCanvas();
+}
+
+function setupCanvas(){
+
   tintColor = random(neonColors);
   background(random(neonColors));
   resizeImages();
   createCutouts(numOfCutouts);
-
-  createSaveButton();
-  createResetButton();
-  createJoinButton();
-
-
   imageMode(CENTER);
   image(images[0], paddedCanvasWidth / 2, paddedCanvasHeight / 2);
+
 }
 
 function draw() {
   if (capturingViewer) {
     showCaptureState();
-  }
-  else {
+  } else {
     for (let cutout of cutouts) {
       if (draggingCutout == null) {
         let hover =
           mouseX >= cutout.x && mouseX <= cutout.x + cutout.w &&
-          mouseY >= cutout.y && mouseY <= cutout.y + cutout.h
-        if (hover) { tint(tintColor); }
+          mouseY >= cutout.y && mouseY <= cutout.y + cutout.h;
+        if (hover) {
+          tint(tintColor);
+        }
       }
 
       imageMode(CORNER);
@@ -78,21 +74,18 @@ function resizeImages() {
   for (let picture of images) {
     if (width < height) {
       picture.resize(paddedCanvasWidth, ((picture.height * (paddedCanvasWidth)) / picture.width));
-    }
-    else {
+    } else {
       picture.resize((picture.width * (paddedCanvasHeight)) / picture.height, paddedCanvasHeight);
-
     }
   }
 }
-
 
 function touchStarted() {
   for (let i = cutouts.length - 1; i >= 0; i--) {
     let cutout = cutouts[i];
     let hover =
       mouseX >= cutout.x && mouseX <= cutout.x + cutout.w &&
-      mouseY >= cutout.y && mouseY <= cutout.y + cutout.h
+      mouseY >= cutout.y && mouseY <= cutout.y + cutout.h;
     if (hover) {
       draggingCutout = cutout;
       image(cutout.img, cutout.x, cutout.y);
@@ -102,7 +95,6 @@ function touchStarted() {
     }
   }
 }
-
 
 function touchMoved() {
   if (draggingCutout != null) {
@@ -135,57 +127,33 @@ function createCutouts(numOfCutouts) {
   }
 }
 
-
-
-
-
-function createJoinButton() {
-  const resetButton = createButton('Enter Composition!');
-  resetButton.position(50, 50); // Position below the save button
-  resetButton.mousePressed(joinComposition);
-}
-
 function joinComposition() {
+  hideMainButtons();
+  background('black');
   video = createCapture(VIDEO);
-  video.size(width, height);
+  //video.size(images[0].width,images[0].height);
+  video.size(width,height);
   video.hide();
-  bodySegmentation.detectStart(video, gotResults);
+  personSeg.setupBodySegmentation(video);
   createCaptureButton();
   capturingViewer = true;
 }
 
-function createCaptureButton() {
-  const resetButton = createButton('Capture');
-  resetButton.position(50, 50); // Position below the save button
-  resetButton.mousePressed(capturedImage);
-}
-
-function gotResults(result) {
-  segmentation = result;
-}
-
 function capturedImage() {
-  segmentedImg = get(0, 0, width, height);
+  showMainButtons();
 
-  if (segmentedImg) {
-    // Iterate over pixels to set alpha of black pixels to 0
-    segmentedImg.loadPixels();
-    for (let i = 0; i < segmentedImg.pixels.length; i += 4) {
-      // Check if pixel is black (R, G, B all 0)
-      if (segmentedImg.pixels[i] === 0 && segmentedImg.pixels[i + 1] === 0 && segmentedImg.pixels[i + 2] === 0) {
-        segmentedImg.pixels[i + 3] = 0; // Set alpha to 0
-      }
-    }
-    segmentedImg.updatePixels();
-    images.push(segmentedImg);
+  let capturedImage = captureImage();
+  let capturedImageWeight=5;
+  capturingViewer = false;
+
+  capturedImage.resize(images[0].width,images[0].height);
+  for(let i=0;i<capturedImageWeight;i++){
+    images.push(capturedImage);
   }
-
-  resizeImages();
-  createCutouts(numOfCutouts);
-  background(random(neonColors));
-  imageMode(CENTER);
-  image(images[0], paddedCanvasWidth / 2, paddedCanvasHeight / 2);
-  capturingViewer=false;
-
+  cutouts=[];
+  setupCanvas();
 }
+
+
+
 
