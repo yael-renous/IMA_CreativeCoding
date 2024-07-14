@@ -3,6 +3,8 @@ const neonColors = ['#FF00FF','#39FF14','#FFFF33','#00FFFF','#FF9933','#FF1493',
 let cutouts = [];
 let images=[];
 let windowPadding=100;
+let paddedCanvasWidth;
+let paddedCanvasHeight;
 
 let draggingCutout=null;
 let tintColor;
@@ -15,23 +17,30 @@ function preload() {
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
+  paddedCanvasWidth =  width-windowPadding;
+  paddedCanvasHeight =  height-windowPadding;
+
   tintColor=random(neonColors);
   background(random(neonColors));
   resizeImages();
   createCutouts(numOfCutouts);
-  
-  image(images[0], 0, 0);
+
+  createSaveButton(); // Create the save button
+  createResetButton();
+
+
+  imageMode(CENTER);
+  image(images[0], paddedCanvasWidth / 2, paddedCanvasHeight / 2);
 }
 
 
 function resizeImages(){
   for(let picture of images){
     if(width<height){
-      //console.log("width<height"+width +"   "+ height);
-      picture.resize(width-windowPadding, ((picture.height*(width-windowPadding))/picture.width));
+      picture.resize(paddedCanvasWidth, ((picture.height*(paddedCanvasWidth))/picture.width));
     }
     else{
-      picture.resize((picture.width*(height-windowPadding))/picture.height, height -windowPadding);
+      picture.resize((picture.width*(paddedCanvasHeight))/picture.height, paddedCanvasHeight);
 
     }
   }
@@ -45,13 +54,11 @@ function draw() {
             mouseY >= cutout.y && mouseY <= cutout.y + cutout.h
      if (hover) {tint(tintColor);}
    }
-   
+
+   imageMode(CORNER);
    image(cutout.img, cutout.x, cutout.y);
    noTint();
  }
-
- // image(video, 0, 0, width, height);
-
 }
 
 function touchStarted(){
@@ -82,24 +89,24 @@ function touchEnded(){
   draggingCutout = null;
 }
 
-
 function createCutouts(numOfCutouts)
 {
   let cutOutMinSize = images[0].width/8;
-    let cutOutMaxSize = images[0].width/3;
+  let cutOutMaxSize = images[0].width/3;
 
   for (let i = 0; i < numOfCutouts; i++) {
     let w = random(cutOutMinSize, cutOutMaxSize);
     let h = random(cutOutMinSize , cutOutMaxSize);
-    let x = random(width - w);
-    let y = random(height - h);
-  
+
+    let randomSource= random(images);
+
+    let x = random(randomSource.width - w);
+    let y = random(randomSource.height - h);
     let cutout = createGraphics(w, h);
     cutout.rect(0, 0, w, h);
     cutout.drawingContext.globalCompositeOperation = 'source-in';
-    let randomSource= random(images);
     cutout.image(randomSource, -x, -y);
-    cutouts.push({ img: cutout, x: x, y: y, w:w, h:h});
+    cutouts.push({ img: cutout, x: x+(paddedCanvasWidth/2 - images[0].width/2), y:y+(paddedCanvasHeight/2 - images[0].height/2), w:w, h:h});
   }
 }
 
