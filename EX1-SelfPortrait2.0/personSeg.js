@@ -12,6 +12,10 @@ function setupBodySegmentation(inputVideo) {
   bodySegmentation.detectStart(video, gotResults);
 }
 
+function stopBodySegmentation(){
+  bodySegmentation.detectStop();
+}
+
 function gotResults(result) {
   segmentation = result;
 }
@@ -27,6 +31,7 @@ function captureImage() {
     }
     segmentedImg.updatePixels();
   }
+  stopBodySegmentation();
   return segmentedImg;
 }
 
