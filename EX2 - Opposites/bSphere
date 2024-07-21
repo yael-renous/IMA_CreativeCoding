@@ -1,0 +1,100 @@
+/*
+Shape building taken from Kazuki Umeda 
+Video Tutorial: https://www.youtube.com/watch?v=SGHWZz5Mrsw
+Git: https://github.com/Creativeguru97/YouTube_tutorial/blob/master/Play_with_geometry/SphericalCoordinates/0_4_bumpySphere/sketch.js
+----------------------------------------
+*/
+
+
+class BumpySphere {
+    //bumpiness range -> 0 - 1.5, step 0.01
+    //theta range -> 0 - 10, step 0.1
+    //phy range -> 0 - 10, step 0.1
+
+    constructor(x, y, z, radius) {
+        this.pos = createVector(x, y, z);
+        this.bumpiness = 0;
+        this.thetaValue = 0;
+        this.phyValue = 0;
+        this.r = radius;
+        this.rotation = 0;
+
+        this.isMelting = false;
+        this.destBump;
+        this.destTheta;
+        this.destPhy;
+        this.destRadius;
+    }
+
+    display() {
+        push();
+        translate(this.pos.x, this.pos.y, this.pos.z);
+        rotateX(this.rotation);
+        rotateY(this.rotation);
+        beginShape(POINTS);
+        for (let theta = 0; theta < 180; theta += 2) {
+            for (let phy = 0; phy < 360; phy += 2) {
+                let x = this.r * (1 + this.bumpiness * sin(this.thetaValue * theta) * sin(this.phyValue * phy)) * sin(1 * theta) * cos(phy);
+                let y = this.r * (1 + this.bumpiness * sin(this.thetaValue * theta) * sin(this.phyValue * phy)) * sin(1 * theta) * sin(phy);
+                let z = this.r * (1 + this.bumpiness * sin(this.thetaValue * theta) * sin(this.phyValue * phy)) * cos(1 * theta);
+                vertex(x, y, z);
+            }
+        }
+        endShape();
+        pop();
+    }
+
+    setPosition(x, y, z) {
+        this.pos.set(x, y, z);
+    }
+
+    setSize(size) {
+        this.size = size;
+    }
+
+    rotate() {
+
+        if (this.isMelting) {
+            if (this.bumpiness == this.destBump && this.thetaValue == this.destTheta && this.phyValue == this.phyValue )
+                this.randomizeSphereVals();
+            if (!this.isWithinThreshold(this.bumpiness,this.destBump,0)) {
+                this.bumpiness = this.bumpiness < this.destBump ? this.bumpiness += 0.01 : this.bumpiness -= 0.01;
+            }
+            else this.bumpiness=this.destBump;
+            if (!this.isWithinThreshold(this.thetaValue ,this.destTheta,0)) {
+                this.thetaValue = this.thetaValue < this.destTheta ? this.thetaValue += 0.1 : this.thetaValue -= 0.1;
+            }
+            else this.thetaValue = this.destTheta;
+            if (!this.isWithinThreshold(this.phyValue ,this.destPhy,0)) {
+                this.phyValue = this.phyValue < this.destPhy ? this.phyValue += 0.1 : this.phyValue -= 0.1;
+            }
+            else this.phyValue=this.destPhy;
+            // if (this.r != this.destRadius) this.r = this.r < this.destRadius ? this.r += 1 : this.r -= 1;
+        }
+        else {
+            this.rotation += 0.1;
+
+        }
+    }
+
+    toggleMelt() {
+        this.isMelting = !this.isMelting;
+        if (this.isMelting) this.randomizeSphereVals()
+
+
+    }
+
+    randomizeSphereVals() {
+        this.destTheta = random(0, 10);
+        this.destBump = random(0, 1.5);
+        this.destPhy = random(0, 10);
+        this.destRadius = random(this.r / 2, this.r * 2);
+    }
+
+     isWithinThreshold(value1, value2, threshold) {
+        let difference = Math.abs(value1 - value2);
+        return difference <= threshold;
+      }
+      
+
+}
