@@ -1,8 +1,4 @@
 class BumpySphere {
-    //bumpiness range -> 0 - 1.5, step 0.01
-    //theta range -> 0 - 10, step 0.1
-    //phy range -> 0 - 10, step 0.1
-
     constructor(x, y, z, radius) {
         this.pos = createVector(x, y, z);
         this.bumpiness = 0;
@@ -69,10 +65,6 @@ class BumpySphere {
         else {
             this.rotation += 0.1;
         }
-        //  this.rotation += 0.1;
-
-
-
     }
 
 

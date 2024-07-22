@@ -1,4 +1,11 @@
 
+
+/**
+ * Yael Renous
+ * Creative Coding 2024 - EX2 Opposites
+ * Description: Solid vs liquid and the barrier with solids that we have when interacting with them
+ * */
+
 let matrix = [];
 let bgColor;
 
@@ -8,7 +15,7 @@ function setup() {
   colorMode(RGB);
   let colorColor = color(random(255), random(255), random(255));
   stroke(colorColor);
-  strokeWeight(0.8);
+  strokeWeight(0.9);
   noFill();
   bgColor='black';
   createMatrix();
