@@ -1,11 +1,3 @@
-/*
-Shape building taken from Kazuki Umeda 
-Video Tutorial: https://www.youtube.com/watch?v=SGHWZz5Mrsw
-Git: https://github.com/Creativeguru97/YouTube_tutorial/blob/master/Play_with_geometry/SphericalCoordinates/0_4_bumpySphere/sketch.js
-----------------------------------------
-*/
-
-
 class BumpySphere {
     //bumpiness range -> 0 - 1.5, step 0.01
     //theta range -> 0 - 10, step 0.1
@@ -17,20 +9,28 @@ class BumpySphere {
         this.thetaValue = 0;
         this.phyValue = 0;
         this.r = radius;
-        this.rotation = 0;
+        this.rotation = random(-0.1, 0.1);
 
         this.isMelting = false;
+
         this.destBump;
         this.destTheta;
         this.destPhy;
-        this.destRadius;
     }
 
     display() {
         push();
         translate(this.pos.x, this.pos.y, this.pos.z);
-        rotateX(this.rotation);
+        if (!this.isMelting)
+            rotateX(this.rotation);
         rotateY(this.rotation);
+
+        /*
+        Shape building taken from Kazuki Umeda 
+        Video Tutorial: https://www.youtube.com/watch?v=SGHWZz5Mrsw
+        Git: https://github.com/Creativeguru97/YouTube_tutorial/blob/master/Play_with_geometry/SphericalCoordinates/0_4_bumpySphere/sketch.js
+        ----------------------------------------
+        */
         beginShape(POINTS);
         for (let theta = 0; theta < 180; theta += 2) {
             for (let phy = 0; phy < 360; phy += 2) {
@@ -52,49 +52,52 @@ class BumpySphere {
         this.size = size;
     }
 
-    rotate() {
-
+    update() {
         if (this.isMelting) {
-            if (this.bumpiness == this.destBump && this.thetaValue == this.destTheta && this.phyValue == this.phyValue )
-                this.randomizeSphereVals();
-            if (!this.isWithinThreshold(this.bumpiness,this.destBump,0)) {
-                this.bumpiness = this.bumpiness < this.destBump ? this.bumpiness += 0.01 : this.bumpiness -= 0.01;
-            }
-            else this.bumpiness=this.destBump;
-            if (!this.isWithinThreshold(this.thetaValue ,this.destTheta,0)) {
-                this.thetaValue = this.thetaValue < this.destTheta ? this.thetaValue += 0.1 : this.thetaValue -= 0.1;
-            }
-            else this.thetaValue = this.destTheta;
-            if (!this.isWithinThreshold(this.phyValue ,this.destPhy,0)) {
-                this.phyValue = this.phyValue < this.destPhy ? this.phyValue += 0.1 : this.phyValue -= 0.1;
-            }
-            else this.phyValue=this.destPhy;
-            // if (this.r != this.destRadius) this.r = this.r < this.destRadius ? this.r += 1 : this.r -= 1;
+
+            let distancFromMouse = dist(this.pos.x, this.pos.y, mouseX, mouseY);
+            
+            let width = this.r *5;
+            this.destBump = map(distancFromMouse, 0, width, 0, 0.8);
+            this.destTheta = map(distancFromMouse, 0, width, 0, 8);
+            this.destPhy = map(distancFromMouse, 0, width, 0, 2);
+
+            this.bumpiness = lerp(Math.min(this.bumpiness, this.destBump), Math.max(this.bumpiness, this.destBump), 0.01);
+            this.thetaValue = lerp(Math.min(this.thetaValue, this.destTheta), Math.max(this.thetaValue, this.destTheta), 0.1);
+            this.phyValue = lerp(Math.min(this.phyValue, this.destPhy), Math.max(this.phyValue, this.destPhy), 0.1);
         }
         else {
             this.rotation += 0.1;
-
         }
+        //  this.rotation += 0.1;
+
+
+
     }
+
 
     toggleMelt() {
         this.isMelting = !this.isMelting;
-        if (this.isMelting) this.randomizeSphereVals()
+        if (this.isMelting) this.randomizeSphereVals();
+        else this.resetValues();
+    }
 
-
+    resetValues() {
+        this.bumpiness = 0;
+        this.thetaValue = 0;
+        this.phyValue = 0;
     }
 
     randomizeSphereVals() {
         this.destTheta = random(0, 10);
         this.destBump = random(0, 1.5);
         this.destPhy = random(0, 10);
-        this.destRadius = random(this.r / 2, this.r * 2);
     }
 
-     isWithinThreshold(value1, value2, threshold) {
-        let difference = Math.abs(value1 - value2);
-        return difference <= threshold;
-      }
-      
+    //  isWithinThreshold(value1, value2, threshold) {
+    //     let difference = Math.abs(value1 - value2);
+    //     return difference <= threshold;
+    //   }
+
 
 }
