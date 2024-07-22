@@ -31,6 +31,7 @@ function draw() {
   }
 }
 
+//create a grid of spheres
 function createMatrix() {
   var sphereRadius = width / 5;
   var padding = sphereRadius / 2;
@@ -48,6 +49,7 @@ function createMatrix() {
   }
 }
 
+//when mouse is pressed switch between liquid and solid states
 function mousePressed() {
   for (let s of matrix) {
     s.toggleMelt();
