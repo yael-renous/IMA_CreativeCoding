@@ -8,10 +8,6 @@ class BumpySphere {
         this.rotation = random(-0.1, 0.1);
 
         this.isMelting = false;
-
-        this.destBump;
-        this.destTheta;
-        this.destPhy;
     }
 
     display() {
@@ -52,15 +48,15 @@ class BumpySphere {
         if (this.isMelting) {
 
             let distancFromMouse = dist(this.pos.x, this.pos.y, mouseX, mouseY);
-            
-            let width = this.r *5;
-            this.destBump = map(distancFromMouse, 0, width, 0, 0.8);
-            this.destTheta = map(distancFromMouse, 0, width, 0, 8);
-            this.destPhy = map(distancFromMouse, 0, width, 0, 2);
+            let width = this.r * 5;
+            let destBump = map(distancFromMouse, 0, width, 0, 0.8);
+            let destTheta = map(distancFromMouse, 0, width, 0, 8);
+            let destPhy = map(distancFromMouse, 0, width, 0, 2);
 
-            this.bumpiness = lerp(Math.min(this.bumpiness, this.destBump), Math.max(this.bumpiness, this.destBump), 0.01);
-            this.thetaValue = lerp(Math.min(this.thetaValue, this.destTheta), Math.max(this.thetaValue, this.destTheta), 0.1);
-            this.phyValue = lerp(Math.min(this.phyValue, this.destPhy), Math.max(this.phyValue, this.destPhy), 0.1);
+            //lerp values
+            this.bumpiness = lerp(Math.min(this.bumpiness, destBump), Math.max(this.bumpiness, destBump), 0.05);
+            this.thetaValue = lerp(Math.min(this.thetaValue, destTheta), Math.max(this.thetaValue, destTheta), 0.8);
+            this.phyValue = lerp(Math.min(this.phyValue, destPhy), Math.max(this.phyValue, destPhy), 0.1);
         }
         else {
             this.rotation += 0.1;
@@ -70,26 +66,11 @@ class BumpySphere {
 
     toggleMelt() {
         this.isMelting = !this.isMelting;
-        if (this.isMelting) this.randomizeSphereVals();
-        else this.resetValues();
+        if (!this.isMelting) {
+            this.bumpiness = 0;
+            this.thetaValue = 0;
+            this.phyValue = 0;
+        }
     }
-
-    resetValues() {
-        this.bumpiness = 0;
-        this.thetaValue = 0;
-        this.phyValue = 0;
-    }
-
-    randomizeSphereVals() {
-        this.destTheta = random(0, 10);
-        this.destBump = random(0, 1.5);
-        this.destPhy = random(0, 10);
-    }
-
-    //  isWithinThreshold(value1, value2, threshold) {
-    //     let difference = Math.abs(value1 - value2);
-    //     return difference <= threshold;
-    //   }
-
 
 }
