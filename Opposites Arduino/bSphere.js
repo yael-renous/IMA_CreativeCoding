@@ -45,6 +45,10 @@ class BumpySphere {
     }
 
     update(b,t,p) {
+        if(b==null||t ==null ||p==null)
+        {
+            b=0; t=0; p=0;
+        }
             let destBump = map(b, 0, 1023, 0, 0.8);
             let destTheta = map(t, 0, 1023, 0, 8);
             let destPhy = map(p, 0, 1010, 0.2, 2);
